@@ -21,28 +21,34 @@ def index(request):
 
     distances = [1]
     angles = [0, 90]
+    if request.method == "POST":
+        angles = list(map(int, request.POST.getlist('degrees')))
 
 
     # glcm = graycomatrix(gray_image_uint8, distances=distances, angles=angles, levels=256, symmetric=True, normed=True)
     
     features = []
-    for angle in angles:
-        temp_array = []
-        glcm = graycomatrix(gray_image_uint8, distances=distances, angles=[angle]) # ada hal redudansi kek ginian karena susunan dari graycoprops berbeda dari yang diinginkan dan pada tampilan buat django itu dia gak bisa array get by dynamic index
-        properties = ['contrast', 'dissimilarity', 'homogeneity', 'correlation']
-        count = 0
-        for prop in properties:
-            if count == 0:
-                temp_array.append(angle)
-                count += 1
-            feature = graycoprops(glcm, prop)
-            temp_array.append(feature[0][0])
-        features.append(temp_array)
+    properties = ['contrast', 'homogeneity', 'correlation', 'energy']
+    if angles:
+        for angle in angles:
+            temp_array = []
+            glcm = graycomatrix(gray_image_uint8, distances=distances, angles=[angle]) # ada hal redudansi kek ginian karena susunan dari graycoprops berbeda dari yang diinginkan dan pada tampilan buat django itu dia gak bisa array get by dynamic index
+            count = 0
+            for prop in properties:
+                if count == 0:
+                    temp_array.append(angle)
+                    count += 1
+                feature = graycoprops(glcm, prop)
+                temp_array.append(feature[0][0])
+            features.append(temp_array)
 
-    properties.insert(0, 'angle (°)')
+        properties.insert(0, 'angle (°)')
+    
+    print(angles)
     context = {
         'grayscaled_image': base64_data_uri,
         'properties': properties,
-        'features': features
+        'features': features,
+        'angles': angles
     }
     return render(request, 'tugas.html', context)

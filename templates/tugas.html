@@ -57,19 +57,79 @@
 
         <main class="space-y-6">
             <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg">
-                <h2 class="text-lg font-semibold mb-3 text-slate-200">Contoh penggunaan</h2>
-                <ul class="list-disc pl-5 space-y-2 text-slate-200">
-                    <li><strong>Fuzzy</strong>: Kontroler AC</li>
-                    <li><strong>ANN</strong>: Pengenalan citra</li>
-                    <li><strong>Genetic</strong>: Pencarian Rute pada aplikasi gojek.
-                    </li>
-                </ul>
+                <h2 class="text-lg font-semibold mb-3 text-slate-200">Pilih derajat</h2>
+                <form method="post" action="{% url 'index' %}" class="space-y-4">
+                    {% csrf_token %}
+                    <!-- Inline left-to-right checkboxes -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <label class="flex items-center space-x-2 text-sm font-medium text-slate-200">
+                            <input type="checkbox" name="degrees" value="0" {% if 0 in angles %} checked {% endif %}
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <span>0&deg;</span>
+                        </label>
+
+                        <label class="flex items-center space-x-2 text-sm font-medium text-slate-200">
+                            <input type="checkbox" name="degrees" value="45" {% if 45 in angles %} checked {% endif %}
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <span>45&deg;</span>
+                        </label>
+
+                        <label class="flex items-center space-x-2 text-sm font-medium text-slate-200">
+                            <input type="checkbox" name="degrees" value="90" {% if 90 in angles %} checked {% endif %}
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <span>90&deg;</span>
+                        </label>
+
+                        <label class="flex items-center space-x-2 text-sm font-medium text-slate-200">
+                            <input type="checkbox" name="degrees" value="135" {% if 135 in angles %} checked {% endif %}
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <span>135&deg;</span>
+                        </label>
+                    </div>
+                    <div>
+                        <button type="submit"
+                            class="mt-3 inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600 text-white hover:bg-blue-700">
+                            Submit
+                        </button>
+                    </div>
+                </form>
             </section>
 
-            <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg flex">
+            <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg">
                 {% load static %}
-                <div class="flex-auto"><img src="{% static 'images/maju-lo-rasa-malas.jpg' %}" alt=""></div>
-                <div class="flex-auto"><img src="{{ grayscaled_image }}" alt=""></div>
+                <div class="flex gap-6 items-start">
+                    <!-- card 1 -->
+                    <figure class="relative flex-1 rounded-lg bg-gray-900/10">
+                        <!-- centered container so image is not cropped and remains fully visible -->
+                        <div class="w-full flex items-center justify-center p-3">
+                            <img src="{% static 'images/maju-lo-rasa-malas.jpg' %}" alt="image 1"
+                                class="w-full h-auto max-h-80 object-contain" />
+                        </div>
+
+                        <!-- overlay text at top -->
+                        <div class="absolute inset-x-0 top-3 flex justify-center pointer-events-none z-10">
+                            <span
+                                class="bg-black/60 text-white text-sm font-semibold px-3 py-1 rounded-md backdrop-blur-sm">
+                                Original
+                            </span>
+                        </div>
+                    </figure>
+
+                    <!-- card 2 -->
+                    <figure class="relative flex-1 rounded-lg bg-gray-900/10">
+                        <div class="w-full flex items-center justify-center p-3">
+                            <img src="{{ grayscaled_image }}" alt="image 2"
+                                class="w-full h-auto max-h-80 object-contain" />
+                        </div>
+
+                        <div class="absolute inset-x-0 top-3 flex justify-center pointer-events-none z-10">
+                            <span
+                                class="bg-black/60 text-white text-sm font-semibold px-3 py-1 rounded-md backdrop-blur-sm">
+                                Grayscaled
+                            </span>
+                        </div>
+                    </figure>
+                </div>
             </section>
 
             <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg overflow-x-auto">
@@ -77,21 +137,21 @@
                 <table class="w-full text-left table-auto border-collapse">
                     <thead>
                         <tr class="text-slate-300/80">
-                                <!-- <th class="px-4 py-2">degree</th> -->
-                            {% for property in properties %} 
-                                <th class="px-4 py-2">{{ property }}</th>
-                            {% endfor %} 
+                            <!-- <th class="px-4 py-2">degree</th> -->
+                            {% for property in properties %}
+                            <th class="px-4 py-2">{{ property }}</th>
+                            {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="text-slate-200">
-                        {% for feature in features %} 
+                        {% for feature in features %}
                         <tr class="border-t border-slate-700">
-                                {% for item in feature %} 
-                                    <th class="px-4 py-2">{{ item }}</th>
-                                {% endfor %} 
-                            </tr>
-                        {% endfor %} 
-                        </tbody>
+                            {% for item in feature %}
+                            <th class="px-4 py-2">{{ item }}</th>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </section>
         </main>
