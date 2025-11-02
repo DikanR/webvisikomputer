@@ -1,4 +1,4 @@
-# Tugas soft computing
+# Tugas Visi Komputer
 Muhammad Dikan Rizaldy  
 2411016210009
 
