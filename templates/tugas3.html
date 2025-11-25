@@ -20,12 +20,10 @@
                             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
                             <a href="/" aria-current="page"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Tugas 1</a>
+                            <a href="/tugas2"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Tugas 2</a>
                             <a href="#"
-                                class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Tugas 2</a>
-                            <a href="/tugas3" aria-current="page"
-                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Tugas 3</a>
-                            <a href="#"
-                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Soon</a>
+                                class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Tugas 3</a>
                             <a href="#"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Soon</a>
                         </div>
@@ -52,27 +50,54 @@
     <div class="max-w-4xl mx-auto p-6">
         <header class="items-center gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-semibold">Klasifikasi Mengggunakan Metode K-NN (K-Nearest Neighbor)</h1>
-                <p class="text-slate-400 mt-1">Untuk mengklasifikasi spesies bunga iris berdasarkan fiturnya.</p>
-                <p class="text-slate-400 mt-1">
+                <h1 class="text-2xl font-semibold">Klasifikasi Mengggunakan Metode Naive Bayes</h1>
+                <p class="text-slate-400 mt-1">Untuk mengklasifikasi apakah membeli Laptop beserta probabilitas posteriornya berdasarkan fiturnya.</p>
+                <!-- <p class="text-slate-400 mt-1">
                     Dataset yang digunakan: 
                     <a class="text-slate-400 mt-1" href="https://www.kaggle.com/datasets/uciml/iris">https://www.kaggle.com/datasets/uciml/iris</a>
-                </p>
+                </p> -->
             </div>
         </header>
 
         <main class="space-y-6">
             <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg">
                 <h2 class="text-lg font-semibold mb-3 text-slate-200">Masukan Nilai Fitur</h2>
-                <form method="post" action="{% url 'tugas2' %}" class="space-y-4">
+                <form method="post" action="{% url 'tugas3' %}" class="space-y-4">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        {% for input_field in input_fields %}
+                        <div>
+                            <label class="block text-sm font-medium text-slate-200">Jumlah data yang di-input</label>
+                            <input
+                            value="{{ input_data_count }}"
+                            type="number"
+                            name="input_data_count"
+                            step="any"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            oninput="this.value = this.value.replace(/,/g,'.')"
+                            class="mt-1 block w-full rounded-md border border-gray-300 bg-slate-200 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                            autocomplete="off"
+                            >
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        {% for itm in input_data_count_range %}
+                        <div>
+                        <label class="block text-sm font-medium text-slate-200">Data {{ forloop.counter }}</label>
+                        {% for category in categories %}
+                        <div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-200">{{ input_field }}</label>
-                                <input type="text" name="features[]"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 bg-slate-200 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <!-- <label class="block text-sm font-medium text-slate-200">{{ input_field }}</label> -->
+                                <select name="items[]"
+                                class="mt-1 block w-full rounded-md border border-gray-300 bg-slate-200 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                {% for options in category %}
+                                    <option value="{{ options }}">{{ options }}</option>
+                                {% endfor %}
+                                </select>
                             </div>
+                        </div>
+                        {% endfor %}
+                        </div>
                         {% endfor %}
                     </div>
                     
@@ -87,36 +112,53 @@
 
             <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg text-slate-200">
                 <h2 class="text-lg font-semibold mb-3 text-slate-200">Hasil Klasifikasi</h2>
-                {% if classification_result|length == 0 %}
+                {% if result|length == 0 %}
                     Menunggu input...
                 {% else %}
                     <table class="w-full text-left table-auto border-collapse">
                         <thead>
                             <tr class="text-slate-300/80">
-                                <!-- <th class="px-4 py-2">degree</th> -->
-                                {% for property in properties %}
+                                <th class="px-4 py-2">Data</th>
+                                {% for key, property in properties.items %}
                                 <th class="px-4 py-2">{{ property }}</th>
                                 {% endfor %}
                             </tr>
                         </thead>
                         <tbody class="text-slate-200">
+                            {% for items in result %}
                             <tr class="border-t border-slate-700">
-                                {% for item in classification_result %}
-                                <th class="px-4 py-2">{{ item }}</th>
+                                <th class="px-4 py-2">{{ forloop.counter }}</th>
+                                {% for item in items %}
+                                {% with item|last as last %}
+                                    {% if not forloop.last %}
+                                        <th class="px-4 py-2">{{ item }}</th>
+                                    {% else %}
+                                        <th class="px-4 py-2">
+                                            <p>{{ item.0 }}</p>
+                                            <p>
+                                                {% for class, probabilites in last.items %}
+                                                    {{ class }}: {{ probabilites }}
+                                                {% endfor %}
+                                            </p>
+                                        </th>
+                                    {% endif %}
+                                {% endwith %}
                                 {% endfor %}
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 {% endif %}
             </section>
 
             <section class="bg-gray-800 glass rounded-xl p-6 shadow-lg overflow-x-auto">
-                <h2 class="text-lg font-semibold mb-3 text-slate-200">Hasil ekstraksi Fitur</h2>
+                <h2 class="text-lg font-semibold mb-3 text-slate-200">Data</h2>
                 <table class="w-full text-left table-auto border-collapse">
                     <thead>
                         <tr class="text-slate-300/80">
                             <!-- <th class="px-4 py-2">degree</th> -->
-                            {% for property in properties %}
+                            <th class="px-4 py-2">Data</th>
+                            {% for key, property in properties.items %}
                             <th class="px-4 py-2">{{ property }}</th>
                             {% endfor %}
                         </tr>
@@ -124,6 +166,7 @@
                     <tbody class="text-slate-200">
                         {% for items in features_and_classification %}
                         <tr class="border-t border-slate-700">
+                            <th class="px-4 py-2">{{ forloop.counter }}</th>
                             {% for item in items %}
                             <th class="px-4 py-2">{{ item }}</th>
                             {% endfor %}
